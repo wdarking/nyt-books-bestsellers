@@ -1,8 +1,8 @@
-import { useBooksByList } from "../../services/books-api";
+import { useBooksByListQuery } from "../../hooks/useBooksQuery";
 import { Book } from "./Book";
 
 export function BooksList({ listSlug }: { listSlug: string }) {
-  const { data, isLoading, isError } = useBooksByList(listSlug);
+  const { data, isLoading, isError } = useBooksByListQuery(listSlug);
 
   if (isLoading) {
     return "Loading...";

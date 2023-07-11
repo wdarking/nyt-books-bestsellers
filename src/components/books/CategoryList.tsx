@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useListCategories } from "../../services/books-api";
+import { useListCategoriesQuery } from "../../hooks/useBooksQuery";
 
 export function CategoryList({
   setSelectedList,
 }: {
   setSelectedList: (slug: string) => void;
 }) {
-  const { data, isLoading, isError } = useListCategories();
+  const { data, isLoading, isError } = useListCategoriesQuery();
   const [filter, setFilter] = useState("");
   const filteredData =
     data?.results.filter((result) =>

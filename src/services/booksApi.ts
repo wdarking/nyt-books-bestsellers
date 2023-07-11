@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const baseURL = "https://api.nytimes.com/svc/books/v3/";
@@ -11,6 +10,13 @@ const api = axios.create({
   },
 });
 
+type OverviewSchema<ResultType> = {
+  status: string;
+  copyright: string;
+  num_results: number;
+  results: ResultType[];
+};
+
 type ListNameType = {
   list_name: string;
   display_name: string;
@@ -20,24 +26,11 @@ type ListNameType = {
   updated: string;
 };
 
-type OverviewSchema<ResultType> = {
-  status: string;
-  copyright: string;
-  num_results: number;
-  results: ResultType[];
-};
+type ListCategoriesResponse = Promise<OverviewSchema<ListNameType>>;
 
-async function fetchListCategories(): Promise<OverviewSchema<ListNameType>> {
+export async function fetchListCategories(): ListCategoriesResponse {
   const { data } = await api.get("lists/names.json");
   return data;
-}
-
-export function useListCategories() {
-  return useQuery({
-    queryKey: ["list-names"],
-    queryFn: fetchListCategories,
-    staleTime: Infinity,
-  });
 }
 
 type ISBN = {
@@ -81,9 +74,9 @@ export type BestSellerSchema = {
   reviews: ReviewSchema[];
 };
 
-async function fetchBooksByList(
-  slug: string,
-): Promise<OverviewSchema<BestSellerSchema>> {
+type BestSellersResponse = Promise<OverviewSchema<BestSellerSchema>>;
+
+export async function fetchBooksByList(slug: string): BestSellersResponse {
   const { data } = await api.get("lists.json", {
     params: {
       list: slug,
@@ -93,12 +86,4 @@ async function fetchBooksByList(
   console.log(data);
 
   return data;
-}
-
-export function useBooksByList(slug: string) {
-  return useQuery({
-    queryKey: ["books", slug],
-    queryFn: () => fetchBooksByList(slug),
-    staleTime: Infinity,
-  });
 }
