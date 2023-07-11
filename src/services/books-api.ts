@@ -82,7 +82,7 @@ export type BestSellerSchema = {
 };
 
 async function fetchBooksByList(
-  slug: string
+  slug: string,
 ): Promise<OverviewSchema<BestSellerSchema>> {
   const { data } = await api.get("lists.json", {
     params: {

@@ -12,7 +12,7 @@ export function CategoryList({
     data?.results.filter((result) =>
       result.display_name
         .toLocaleLowerCase()
-        .includes(filter.toLocaleLowerCase())
+        .includes(filter.toLocaleLowerCase()),
     ) ?? [];
 
   function selectList(listSlug: string) {
@@ -43,7 +43,7 @@ export function CategoryList({
             filteredData.map((list) => (
               <li
                 key={list.list_name_encoded}
-                onClick={(e) => {
+                onClick={() => {
                   selectList(list.list_name_encoded);
                 }}
                 className="p-3 cursor-pointer hover:bg-blue-50 rounded"
