@@ -9,7 +9,7 @@ function App() {
   const [selectedList, setSelectedList] = useState("hardcover-fiction");
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="h-screen grid">
+      <div className="min-h-screen grid bg-slate-100">
         <div className="container mx-auto p-3 flex flex-col">
           <h1 className="text-2xl font-medium text-center mb-3">
             Hello NYC Bestsellers!
@@ -18,7 +18,7 @@ function App() {
             <div className="md:w-[300px]">
               <CategoryList setSelectedList={setSelectedList} />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 md:px-5">
               <BooksList listSlug={selectedList} />
             </div>
           </div>
