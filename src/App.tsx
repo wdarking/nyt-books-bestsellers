@@ -1,11 +1,10 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./config/queryClient";
 import { CategoryList } from "./components/books/CategoryList";
 import { useState } from "react";
 import { BooksList } from "./components/books/BooksList";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-
-const queryClient = new QueryClient();
 
 function App() {
   const [selectedList, setSelectedList] = useState("hardcover-fiction");
