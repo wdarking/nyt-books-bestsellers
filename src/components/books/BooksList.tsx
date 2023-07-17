@@ -21,7 +21,7 @@ export function BooksList({ listSlug }: { listSlug: string }) {
       <ul className="grid grid-cols-1 auto-rows-max gap-3 md:gap-4">
         {data.results.books.map((book) => (
           <li key={book.primary_isbn13}>
-            <Book book={book} />
+            <Book listName={data.results.display_name} book={book} />
           </li>
         ))}
       </ul>

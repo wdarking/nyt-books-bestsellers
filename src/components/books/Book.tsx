@@ -1,10 +1,25 @@
 import { useState } from "react";
-import { BestSellerSchema } from "../../services/booksApi";
+import { BookSchema } from "../../services/booksApiTypes";
+import { useBooksHistoryQuery } from "../../hooks/useBooksQuery";
 import { AlertTriangleIcon } from "lucide-react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
-export function Book({ book_details: [book], ...ranking }: BestSellerSchema) {
+type BookProps = {
+  book: BookSchema;
+  listName: string;
+};
+
+export function Book({ book, listName }: BookProps) {
   const [expanded, setExpanded] = useState(false);
-  const { rank_last_week, rank } = ranking;
+  const { rank_last_week, rank } = book;
   const rankChange = rank_last_week !== 0 ? rank_last_week - rank : 0;
 
   return (
@@ -18,7 +33,9 @@ export function Book({ book_details: [book], ...ranking }: BestSellerSchema) {
         className="flex items-center gap-3 md:gap-8"
       >
         <div
-          className={`transition-all self-stretch ${expanded ? "p-5" : "p-0"}`}
+          className={`transition-all self-stretch ${
+            expanded ? "py-6 pl-5 pr-2" : ""
+          }`}
         >
           <div
             className={`transition-all w-24 relative bg-slate-500 ${
@@ -28,7 +45,7 @@ export function Book({ book_details: [book], ...ranking }: BestSellerSchema) {
             }`}
           >
             <img
-              src={`https://covers.openlibrary.org/b/isbn/${book.primary_isbn13}-M.jpg`}
+              src={book.book_image}
               alt="Book cover"
               className="transition-all absolute inset-0 w-full h-full object-cover"
             />
@@ -37,13 +54,11 @@ export function Book({ book_details: [book], ...ranking }: BestSellerSchema) {
 
         <div className="flex-1 py-3 md:py-5">
           <em className="text-[0.6rem] md:text-xs uppercase text-slate-600 tracking-wide">
-            #{ranking.rank} &bull;{" "}
-            {ranking.weeks_on_list <= 1
-              ? "New"
-              : `${ranking.weeks_on_list} weeks`}{" "}
-            on list
+            #{book.rank} &bull;{" "}
+            {book.weeks_on_list <= 1 ? "New" : `${book.weeks_on_list} weeks`} on
+            list
           </em>
-          <h2 className="text-sm leading-tight md:text-lg md:leading-tight line-clamp-1 tracking-wide font-bold">
+          <h2 className="text-sm text-slate-700 leading-tight md:text-lg md:leading-tight line-clamp-1 tracking-wide font-bold">
             {book.title}
           </h2>
           <div className="flex justify-between">
@@ -60,7 +75,7 @@ export function Book({ book_details: [book], ...ranking }: BestSellerSchema) {
           )}
         </div>
         <div className="flex items-center gap-5 py-5 pr-3 md:pr-5">
-          {!!ranking.dagger && (
+          {!!book.dagger && (
             <div
               title="Some retailers reported receiving bulk orders"
               className="text-slate-600"
@@ -71,6 +86,13 @@ export function Book({ book_details: [book], ...ranking }: BestSellerSchema) {
           <RankingChangeStats diff={rankChange} />
         </div>
       </div>
+      {expanded && (
+        <RankingHistory
+          currentRank={rank}
+          listName={listName}
+          isbn={book.primary_isbn13}
+        />
+      )}
     </div>
   );
 }
@@ -96,6 +118,87 @@ function RankingChangeStats({ diff }: { diff: number }) {
         {state === "positive" && "+"}
         {state !== "neutral" ? diff : "-"}
       </span>
+    </div>
+  );
+}
+
+export function RankingHistory({
+  isbn,
+  currentRank,
+  listName,
+}: {
+  isbn: string;
+  listName: string;
+  currentRank: number;
+}) {
+  const { data, isLoading, isError } = useBooksHistoryQuery(isbn);
+  const rankHistoryForList =
+    data?.results[0].ranks_history.filter((record) => {
+      const forCurrentList = record.display_name === listName;
+      const publishedUptilNow = new Date(record.published_date) <= new Date();
+      return forCurrentList && publishedUptilNow;
+    }) ?? [];
+
+  const peakRank = Math.min(...rankHistoryForList.map((record) => record.rank));
+
+  const timeAtPeak = rankHistoryForList.filter(
+    (record) => record.rank === peakRank,
+  ).length;
+
+  if (isLoading) {
+    return "Loading ranking history";
+  }
+
+  if (isError) {
+    return "Error loading ranking history";
+  }
+
+  return (
+    <div className="p-3 md:p-5 bg-slate-200">
+      <h4 className="text-slate-700 font-medium mb-1">Ranking development</h4>
+      <div className="flex justify-between mb-3">
+        <div className="flex-1 leading-tight">
+          <span className="text-xs text-slate-500">Current rank</span>
+          <p className="text-slate-700">#{currentRank}</p>
+        </div>
+        <div className="text-right leading-tight">
+          <span className="text-xs text-slate-500">Peak</span>
+          <p className="text-slate-700">#{peakRank}</p>
+        </div>
+        <div className="text-right leading-tight ml-5 md:ml-7">
+          <span className="text-xs text-slate-500">Time at peak</span>
+          <p className="text-slate-700">
+            {timeAtPeak} {timeAtPeak > 1 ? "weeks" : "week"}
+          </p>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={150}>
+        <LineChart data={rankHistoryForList}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            fontSize={12}
+            tickMargin={8}
+            reversed
+            dataKey="published_date"
+            interval={"preserveStartEnd"}
+            tickFormatter={(val) =>
+              `${new Date(val).toISOString().split("T")[0].replace(/-/g, "/")}`
+            }
+          />
+          <YAxis
+            fontSize={12}
+            interval={"preserveStartEnd"}
+            allowDecimals={false}
+            tickCount={5}
+            domain={[1, "maxData"]}
+            reversed
+            dataKey={"rank"}
+            tickMargin={0}
+          />
+          <Tooltip />
+          <Line dataKey={"rank"} />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
