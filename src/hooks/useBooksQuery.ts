@@ -13,19 +13,17 @@ export function useListCategoriesQuery() {
   });
 }
 
-export function useBooksByListQuery(slug: string) {
+export function useBooksByListQuery(listSlug: string) {
   return useQuery({
-    queryKey: ["books", slug],
-    queryFn: () => fetchBooksByList(slug),
+    queryKey: ["books", listSlug],
+    queryFn: () => fetchBooksByList(listSlug),
   });
 }
 
-export function useBooksByDateQuery(slug: string) {
-  const now = new Date();
-  const latestDate = now.toISOString().split("T")[0];
+export function useBooksByDateQuery(listSlug: string, date = "current") {
   return useQuery({
-    queryKey: ["books", slug, latestDate],
-    queryFn: () => fetchListByDate(slug, latestDate),
+    queryKey: ["books", listSlug, date],
+    queryFn: () => fetchListByDate(listSlug, date),
   });
 }
 
