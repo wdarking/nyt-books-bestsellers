@@ -1,5 +1,5 @@
 # NYT best sellers
-This application uses [NYT Books API](https://developer.nytimes.com/docs/books-product/1/overview) to present the best sellers ranking in a clean and practical way. Navigate between NYT curated best sellers lists and keep track of each book ranking history.
+This application uses [NYT Books API](https://developer.nytimes.com/docs/books-product/1/overview) to present the best sellers ranking in a clean and practical way. Navigate between NYT-curated best sellers lists and keep track of each book's ranking history.
 
 ### Features
 - React (Vite)
@@ -26,4 +26,4 @@ cd nyt-books-bestsellers/
 cp .env.example .env
 ```
 #### 3. Install dependencies and start dev server
-Run `npm install` to install the project dependencies. After that you can run `npm run dev` and aceesss it on http://localhost:5173/
+Run `npm install` to install the project dependencies. After that, you can run `npm run dev` and access it on http://localhost:5173/
