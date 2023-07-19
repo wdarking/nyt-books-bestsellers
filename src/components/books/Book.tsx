@@ -139,18 +139,22 @@ export function RankingHistory({
       return forCurrentList && publishedUptilNow;
     }) ?? [];
 
-  const peakRank = Math.min(...rankHistoryForList.map((record) => record.rank));
+  const hasRankingHistory = rankHistoryForList.length > 0;
+
+  const peakRank = hasRankingHistory
+    ? Math.min(...rankHistoryForList.map((record) => record.rank))
+    : 0;
 
   const timeAtPeak = rankHistoryForList.filter(
     (record) => record.rank === peakRank,
   ).length;
 
   if (isLoading) {
-    return "Loading ranking history";
+    return <RankingHistorySkeleton />;
   }
 
   if (isError) {
-    return "Error loading ranking history";
+    return <RankingHistoryError />;
   }
 
   return (
@@ -163,42 +167,79 @@ export function RankingHistory({
         </div>
         <div className="text-right leading-tight">
           <span className="text-xs text-slate-500">Peak</span>
-          <p className="text-slate-700">#{peakRank}</p>
+          <p className="text-slate-700">
+            {hasRankingHistory ? `#${peakRank}` : "No data"}
+          </p>
         </div>
         <div className="text-right leading-tight ml-5 md:ml-7">
           <span className="text-xs text-slate-500">Time at peak</span>
           <p className="text-slate-700">
-            {timeAtPeak} {timeAtPeak > 1 ? "weeks" : "week"}
+            {hasRankingHistory
+              ? `${timeAtPeak} ${timeAtPeak > 1 ? "weeks" : "week"}`
+              : "No data"}
           </p>
         </div>
       </div>
-      <ResponsiveContainer width="100%" height={150}>
-        <LineChart data={rankHistoryForList}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            fontSize={12}
-            tickMargin={8}
-            reversed
-            dataKey="published_date"
-            interval={"preserveStartEnd"}
-            tickFormatter={(val) =>
-              `${new Date(val).toISOString().split("T")[0].replace(/-/g, "/")}`
-            }
-          />
-          <YAxis
-            fontSize={12}
-            interval={"preserveStartEnd"}
-            allowDecimals={false}
-            tickCount={5}
-            domain={[1, "maxData"]}
-            reversed
-            dataKey={"rank"}
-            tickMargin={0}
-          />
-          <Tooltip />
-          <Line dataKey={"rank"} />
-        </LineChart>
-      </ResponsiveContainer>
+      {hasRankingHistory ? (
+        <ResponsiveContainer width="100%" height={150}>
+          <LineChart data={rankHistoryForList}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              fontSize={12}
+              tickMargin={8}
+              reversed
+              dataKey="published_date"
+              interval={"preserveStartEnd"}
+              tickFormatter={(val) =>
+                `${new Date(val)
+                  .toISOString()
+                  .split("T")[0]
+                  .replace(/-/g, "/")}`
+              }
+            />
+            <YAxis
+              fontSize={12}
+              interval={"preserveStartEnd"}
+              allowDecimals={false}
+              tickCount={5}
+              domain={[1, "maxData"]}
+              reversed
+              dataKey={"rank"}
+              tickMargin={0}
+            />
+            <Tooltip />
+            <Line dataKey={"rank"} />
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <span className="text-slate-500">No ranking history found</span>
+      )}
+    </div>
+  );
+}
+
+function RankingHistorySkeleton() {
+  return (
+    <div className="p-3  md:p-5 bg-slate-200 animate-pulse space-y-3 md:space-y-5">
+      <div className="bg-slate-300 rounded-md h-3 w-1/4"></div>
+      <div className="flex">
+        <div className="bg-slate-300 rounded-md h-3 w-16"></div>
+        <div className="ml-auto flex">
+          <div className="bg-slate-300 rounded-md h-3 w-16  "></div>
+          <div className="bg-slate-300 rounded-md h-3 w-16 ml-8"></div>
+        </div>
+      </div>
+      <div className="border-l-4 border-b-4 border-slate-300 h-44 w-full"></div>
+    </div>
+  );
+}
+
+function RankingHistoryError() {
+  return (
+    <div className="p-3 md:p-5 bg-slate-200">
+      <span className="text-slate-500">
+        Could not fetch ranking history. Try again later
+      </span>
     </div>
   );
 }
