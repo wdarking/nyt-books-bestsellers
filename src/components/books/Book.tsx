@@ -133,10 +133,9 @@ export function RankingHistory({
 }) {
   const { data, isLoading, isError } = useBooksHistoryQuery(isbn);
   const rankHistoryForList =
-    data?.results[0].ranks_history.filter((record) => {
+    data?.results[0]?.ranks_history?.filter((record) => {
       const forCurrentList = record.display_name === listName;
-      const publishedUptilNow = new Date(record.published_date) <= new Date();
-      return forCurrentList && publishedUptilNow;
+      return forCurrentList;
     }) ?? [];
 
   const hasRankingHistory = rankHistoryForList.length > 0;
