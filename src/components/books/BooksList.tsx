@@ -1,15 +1,28 @@
+import { useContext } from "react";
 import { useBooksByDateQuery } from "../../hooks/useBooksQuery";
 import { Book } from "./Book";
+import { ListContext } from "@/contexts/ListContext";
+import { ErrorFeedback } from "../ErrorFeedback";
+import { AlertTriangleIcon } from "lucide-react";
 
-export function BooksList({ listSlug }: { listSlug: string }) {
-  const { data, isLoading, isError } = useBooksByDateQuery(listSlug);
+export function BooksList() {
+  const currentList = useContext(ListContext);
+  const { data, isLoading, isError } = useBooksByDateQuery(currentList);
 
   if (isLoading) {
     return <ListSkeleton count={5} />;
   }
 
   if (isError) {
-    return "Error fetching books.";
+    return (
+      <ErrorFeedback.Root>
+        <ErrorFeedback.Content
+          title="Error loading best sellers"
+          description="Something went wrong on our end. Try again in a minute"
+          icon={AlertTriangleIcon}
+        />
+      </ErrorFeedback.Root>
+    );
   }
 
   return (

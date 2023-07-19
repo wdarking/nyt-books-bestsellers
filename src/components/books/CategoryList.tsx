@@ -1,33 +1,40 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useListCategoriesQuery } from "../../hooks/useBooksQuery";
 import { ScrollArea } from "../ui/scroll-area";
-import { SearchIcon } from "lucide-react";
+import { AlertTriangle, SearchIcon } from "lucide-react";
+import { ListActionContext } from "@/contexts/ListContext";
+import { Skeleton } from "../Skeleton";
+import { ErrorFeedback } from "../ErrorFeedback";
 
-export function CategoryList({
-  setSelectedList,
-}: {
-  setSelectedList: (slug: string) => void;
-}) {
+type CategoryListProps = {
+  onOpenChange?: (open: boolean) => void;
+};
+
+export function CategoryList({ onOpenChange }: CategoryListProps) {
+  const selectList = useContext(ListActionContext);
   const { data, isLoading, isError } = useListCategoriesQuery();
   const [filter, setFilter] = useState("");
   const filteredData =
-    data?.results.filter((result) =>
+    data?.results?.filter((result) =>
       result.display_name
         .toLocaleLowerCase()
         .includes(filter.toLocaleLowerCase()),
     ) ?? [];
 
-  function selectList(listSlug: string) {
-    setSelectedList(listSlug);
-    setFilter("");
-  }
-
   if (isLoading) {
-    return "Loading...";
+    return <Skeleton count={10} />;
   }
 
   if (isError) {
-    return "Something went wrong";
+    return (
+      <ErrorFeedback.Root>
+        <ErrorFeedback.Content
+          title="Error loading lists"
+          description="Something went wrong on our end. Try again in a minute"
+          icon={AlertTriangle}
+        />
+      </ErrorFeedback.Root>
+    );
   }
 
   return (
@@ -50,6 +57,8 @@ export function CategoryList({
                 key={list.list_name_encoded}
                 onClick={() => {
                   selectList(list.list_name_encoded);
+                  setFilter("");
+                  onOpenChange?.(false);
                 }}
                 className="p-3 h-12 cursor-pointer bg-white rounded-md hover:bg-blue-200 group/category"
               >
