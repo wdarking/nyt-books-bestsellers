@@ -1,8 +1,11 @@
+import { useContext } from "react";
 import { useBooksByDateQuery } from "../../hooks/useBooksQuery";
 import { Book } from "./Book";
+import { ListContext } from "@/contexts/ListContext";
 
-export function BooksList({ listSlug }: { listSlug: string }) {
-  const { data, isLoading, isError } = useBooksByDateQuery(listSlug);
+export function BooksList() {
+  const currentList = useContext(ListContext);
+  const { data, isLoading, isError } = useBooksByDateQuery(currentList);
 
   if (isLoading) {
     return <ListSkeleton count={5} />;
