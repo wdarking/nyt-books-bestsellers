@@ -14,7 +14,7 @@ function App() {
         <Header />
         <div className="container mx-auto px-3 flex flex-col">
           <div className="flex flex-col md:flex-row gap-3 md:gap-5 flex-1">
-            <aside className="hidden w-[300px] md:block h-[calc(100vh-4rem)] md:sticky top-16 rounded">
+            <aside className="hidden w-[300px] md:block h-[calc(100vh-2.5rem)] md:sticky top-10 rounded">
               <CategoryList setSelectedList={setSelectedList} />
             </aside>
             <div className="flex-1 md:px-5">

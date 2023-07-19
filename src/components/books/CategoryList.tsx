@@ -32,7 +32,7 @@ export function CategoryList({
 
   return (
     <div className="h-full">
-      <div className="focus-within:ring-2 ring-offset-2 ring-blue-600 overflow-hidden mb-3 border rounded bg-white flex items-center pl-3">
+      <div className="focus-within:ring-2 ring-offset-2 ring-blue-600 h-12 overflow-hidden mb-3 border rounded bg-white flex items-center pl-3">
         <SearchIcon className="text-muted-foreground" />
         <input
           className="w-full text-base px-3 py-2.5 text-foreground outline-none"
@@ -42,7 +42,7 @@ export function CategoryList({
           type="text"
         />
       </div>
-      <ScrollArea className="h-full">
+      <ScrollArea className="h-[calc(100%-3.75rem)]">
         <ul className="space-y-3">
           {filteredData.length ? (
             filteredData.map((list) => (
@@ -51,7 +51,7 @@ export function CategoryList({
                 onClick={() => {
                   selectList(list.list_name_encoded);
                 }}
-                className="p-3 cursor-pointer bg-white rounded-md hover:bg-blue-200 group/category"
+                className="p-3 h-12 cursor-pointer bg-white rounded-md hover:bg-blue-200 group/category"
               >
                 <span className="line-clamp-1 text-foreground group-hover/category:text-blue-900">
                   {list.display_name}
