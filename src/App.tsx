@@ -13,14 +13,13 @@ function App() {
       <div className="min-h-screen grid grid-rows-[min-content_1fr_min-content] bg-slate-100 space-y-5 md:space-y-10">
         <Header />
         <div className="container mx-auto px-3 flex flex-col">
-          <div className="flex flex-col md:flex-row gap-3 md:gap-4 flex-1">
-            <div className="md:w-[300px]">
+          <div className="flex flex-col md:flex-row gap-3 md:gap-5 flex-1">
+            <aside className="hidden w-[300px] md:block h-[calc(100vh-4rem)] md:sticky top-16 rounded">
               <CategoryList setSelectedList={setSelectedList} />
-            </div>
+            </aside>
             <div className="flex-1 md:px-5">
               <BooksList listSlug={selectedList} />
             </div>
-            <div className="md:w-[300px]"></div>
           </div>
         </div>
         <Footer />
