@@ -7,10 +7,16 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
-  Tooltip,
+  Tooltip as ChartTooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 type BookProps = {
   book: BookSchema;
@@ -76,12 +82,21 @@ export function Book({ book, listName }: BookProps) {
         </div>
         <div className="flex items-center gap-5 py-5 pr-3 md:pr-5">
           {!!book.dagger && (
-            <div
-              title="Some retailers reported receiving bulk orders"
-              className="text-slate-600"
-            >
-              <AlertTriangleIcon size={18} />
-            </div>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertTriangleIcon
+                    className="text-muted-foreground"
+                    size={18}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-muted-foreground">
+                    Some retailers reported receiving bulk orders
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
           <RankingChangeStats diff={rankChange} />
         </div>
@@ -206,7 +221,7 @@ export function RankingHistory({
               dataKey={"rank"}
               tickMargin={0}
             />
-            <Tooltip />
+            <ChartTooltip />
             <Line dataKey={"rank"} />
           </LineChart>
         </ResponsiveContainer>
