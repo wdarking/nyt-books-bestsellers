@@ -1,0 +1,15 @@
+# Here you can define shortcuts and aliases to common tasks (commands)
+# you will run in your local environment or CI or deploy.
+#  Use the scripts defined below with:
+#    $ kool run <script>
+# Learn more at: https://kool.dev/docs/getting-started/how-it-works#koolyml
+scripts:
+  setup:
+    - cp .env.example .env
+    - kool docker kooldev/node:18 npm install
+    - kool start
+  reset:
+    - kool run npm install
+  # npm - helpers for JS handling
+  app:npm: kool docker kooldev/node:18 npm
+  app:npx: kool docker kooldev/node:18 npx
